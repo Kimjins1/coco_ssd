@@ -7,7 +7,9 @@
 </head>
 
 <body>
-    <div id="info">...</div>
+    <font color="blue">
+        <div id="info">...</div>
+    </font>
     <video id="videoInput" width="320" height="240" style="position: absolute; left:10; top:30"></video>
     <canvas id="videoOutput" width="320" height="240" style="position: absolute; left:10; top:30"></canvas>
     <script>
@@ -22,7 +24,6 @@
             console.log(error);
         }
         navigator.getUserMedia(constraints, successCallback, errorCallback);
-
         let net;
         async function makeNet() {
             info.innerHTML = "Now loading... Please wait.";
@@ -31,20 +32,22 @@
             setInterval(detect, 0);
         }
         makeNet();
-
         let predict;
         const canvas = document.getElementById("videoOutput");
         const ctx = canvas.getContext("2d");
         ctx.strokeStyle = "rgb(0, 255, 0)";
-        ctx.lineWidth = 3;
+        ctx.fillStyle = "rgb(0, 255, 0)";
+        ctx.lineWidth = 2;
         ctx.font = "15px Arial";
-
         async function detect() {
             predict = await net.detect(video);
             info.innerHTML = "Object No. : " + predict.length;
             if (predict.length > 0) {
                 ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
-                ctx.strokeRect(predict[0].bbox[0], predict[0].bbox[1], predict[0].bbox[2], predict[0].bbox[3]);
+                for (let i = 0; i < predict.length; i++) {
+                    ctx.fillText(predict[i].class, predict[i].bbox[0] + 5, predict[i].bbox[1] + 15);
+                    ctx.strokeRect(predict[i].bbox[0], predict[i].bbox[1], predict[i].bbox[2], predict[i].bbox[3]);
+                }
             }
         }
     </script>
