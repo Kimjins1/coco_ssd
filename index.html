@@ -1,17 +1,19 @@
 <html>
 
 <head>
-    <script src="./tf.min.js"></script>
-    <script src="./coco-ssd.js"></script>
+    <title>Coco SSD</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"> </script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"> </script>
 </head>
 
 <body>
-    <div id="console"></div>
-    <video autoplay id="videoInput" width="320" height="240"></video>
-    <canvas id="videoOutput" width="320" height="240"></canvas>
+    <div id="info">...</div>
+    <video id="videoInput" width="320" height="240" style="position: absolute; left:10; top:30"></video>
+    <canvas id="videoOutput" width="320" height="240" style="position: absolute; left:10; top:30"></canvas>
     <script>
-        var constraints = { audio: false, video: true };
-        var video = document.getElementById("videoInput");
+        const info = document.getElementById("info");
+        const constraints = { audio: false, video: true };
+        const video = document.getElementById("videoInput");
         function successCallback(stream) {
             video.srcObject = stream;
             video.play();
@@ -22,33 +24,29 @@
         navigator.getUserMedia(constraints, successCallback, errorCallback);
 
         let net;
-        async function app() {
-            console.log('Loading mobilenet..');
+        async function makeNet() {
+            info.innerHTML = "Now loading... Please wait.";
             net = await cocoSsd.load();
-            console.log('Sucessfully loaded model');
+            info.innerHTML = "Ready to use!";
+            setInterval(detect, 0);
+        }
+        makeNet();
 
-            const canvas = document.getElementById("videoOutput");
-            var ctx = canvas.getContext("2d");
-            const color = ['green', 'red', 'blue'];
-            ctx.lineWidth = 2;
-            ctx.font = "15px Arial";
-            while (true) {
-                const predictions = await net.detect(video);
-                ctx.drawImage(video, 0, 0, 320, 240);
-                let count = predictions.length;
-                if (count > 0 && count < 4) {
-                    for (i = 0; i < count; i++) {
-                        ctx.fillStyle = color[i];
-                        ctx.strokeStyle = color[i];
-                        console.log(predictions[i].class);
-                        ctx.strokeRect(predictions[i].bbox[0], predictions[i].bbox[1], predictions[i].bbox[2], predictions[i].bbox[3]);
-                        ctx.fillText(predictions[i].class, predictions[i].bbox[0] + 5, predictions[i].bbox[1] + 15);
-                    }
-                }
-                await tf.nextFrame();
+        let predict;
+        const canvas = document.getElementById("videoOutput");
+        const ctx = canvas.getContext("2d");
+        ctx.strokeStyle = "rgb(0, 255, 0)";
+        ctx.lineWidth = 3;
+        ctx.font = "15px Arial";
+
+        async function detect() {
+            predict = await net.detect(video);
+            info.innerHTML = "Object No. : " + predict.length;
+            if (predict.length > 0) {
+                ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+                ctx.strokeRect(predict[0].bbox[0], predict[0].bbox[1], predict[0].bbox[2], predict[0].bbox[3]);
             }
         }
-        app();
     </script>
 </body>
 
