@@ -1,33 +1,15 @@
-<!DOCTYPE html>
 <html>
 
 <head>
-
-  <head>
-    <title>Getting Started with ml5.js</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"> </script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"> </script>
-  </head>
+  <script src="./tf.min.js"></script>
+  <script src="./coco-ssd.js"></script>
+</head>
 
 <body>
-  <img src="https://ml5js.org/docs/assets/img/bird.jpg" crossorigin="anonymous" id="image" width="400">
-  <canvas id="canvas" width="800" height="800"></canvas>
-  <button onclick="detect()">Detect</button>
-  <script>
-    const img = document.getElementById('image');
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0);
-    
-    let net;
-    cocoSsd.load().then(function(model){
-      net = model
-    });
-    function detect(){
-      net.detect(canvas).then(predict =>{
-        console.log(predict);
-      });
-    }
+  <div id="console"></div>
+  <video autoplay id="videoInput" width="320" height="240"></video>
+  <canvas id="videoOutput" width="320" height="240"></canvas>
+  <script src="index.js">
   </script>
 </body>
 
