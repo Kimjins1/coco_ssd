@@ -1,52 +1,33 @@
+<!DOCTYPE html>
 <html>
 
 <head>
-  <script src="./tf.min.js"></script>
-  <script src="./coco-ssd.js"></script>
-</head>
+
+  <head>
+    <title>Getting Started with ml5.js</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"> </script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"> </script>
+  </head>
 
 <body>
-  <div id="console"></div>
-  <video autoplay id="videoInput" width="320" height="240"></video>
-  <canvas id="videoOutput" width="320" height="240"></canvas>
+  <img src="https://ml5js.org/docs/assets/img/bird.jpg" crossorigin="anonymous" id="image" width="400">
+  <canvas id="canvas" width="800" height="800"></canvas>
+  <button onclick="detect()">Detect</button>
   <script>
-    var constraints = { audio: false, video: true };
-    var video = document.getElementById("videoInput");
-    function successCallback(stream) {
-      video.srcObject = stream;
-      video.play();
-    }
-    function errorCallback(error) {
-      console.log(error);
-    }
-    navigator.getUserMedia(constraints, successCallback, errorCallback);
+    const img = document.getElementById('image');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    
     let net;
-    async function app() {
-      console.log('Loading model..');
-      net = await cocoSsd.load();
-      console.log('Sucessfully loaded model');
-      const canvas = document.getElementById("videoOutput");
-      var ctx = canvas.getContext("2d");
-      const color = ['green', 'red', 'blue'];
-      ctx.lineWidth = 2;
-      ctx.font = "15px Arial";
-      while (true) {
-        const predictions = await net.detect(video);
-        ctx.drawImage(video, 0, 0, 320, 240);
-        let count = predictions.length;
-        if (count > 0 && count < 4) {
-          for (i = 0; i < count; i++) {
-            ctx.fillStyle = color[i];
-            ctx.strokeStyle = color[i];
-            console.log(predictions[i].class);
-            ctx.strokeRect(predictions[i].bbox[0], predictions[i].bbox[1], predictions[i].bbox[2], predictions[i].bbox[3]);
-            ctx.fillText(predictions[i].class, predictions[i].bbox[0] + 5, predictions[i].bbox[1] + 15);
-          }
-        }
-        await tf.nextFrame();
-      }
+    cocoSsd.load().then(function(model){
+      net = model
+    });
+    function detect(){
+      net.detect(canvas).then(predict =>{
+        console.log(predict);
+      });
     }
-    app();
   </script>
 </body>
 
