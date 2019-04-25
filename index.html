@@ -13,9 +13,8 @@
     <video id="videoInput" style="position: absolute; left:10; top:30"></video>
     <canvas id="videoOutput" style="position: absolute; left:10; top:30"></canvas>
     <script>
-        const orientation = window.orientation;
         let w, h;
-        if (orientation == 0) {
+        if (window.orientation == 0) {
             w = 240;
             h = 320;
         } else {
@@ -23,10 +22,19 @@
             h = 240;
         }
         const info = document.getElementById("info");
-        const constraints = { audio: false, video: true };
+        const filter = "win16|win32|win64|mac|macintel";
+        if (0 > filter.indexOf(navigator.platform.toLowerCase())) {
+            console.log("Client platform : Mobile");
+            //const constraints = { audio: false, video: {facingMode:{exact:"environment"}} }; //Back camera for mobile
+        } else {
+            console.log("Client platform : PC");
+            const constraints = { audio: false, video: true }; //Front camera
+        }
+
+
         const video = document.getElementById("videoInput");
-        video.style.width = w;
-        video.style.height = h;
+        video.width = w;
+        video.height = h;
         function successCallback(stream) {
             video.srcObject = stream;
             video.play();
@@ -45,8 +53,8 @@
         makeNet();
         let predict;
         const canvas = document.getElementById("videoOutput");
-        canvas.style.width = w;
-        canvas.style.height = h;
+        canvas.width = w;
+        canvas.height = h;
         const ctx = canvas.getContext("2d");
         ctx.strokeStyle = "rgb(0, 255, 0)";
         ctx.fillStyle = "rgb(0, 255, 0)";
