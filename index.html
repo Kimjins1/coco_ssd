@@ -13,6 +13,16 @@
     <video id="videoInput" style="position: absolute; left:10; top:30"></video>
     <canvas id="videoOutput" style="position: absolute; left:10; top:30"></canvas>
     <script>
+        const info = document.getElementById("info");
+        const filter = "win16|win32|win64|mac|macintel";
+        let constraints;
+        if (0 > filter.indexOf(navigator.platform.toLowerCase())) {
+            console.log("Client platform : Mobile");
+            constraints = { audio: false, video: {facingMode:{exact:"environment"}} };
+        } else {
+            console.log("Client platform : PC");
+            constraints = { audio: false, video: true };
+        }
         let w, h;
         if (window.orientation == 0) {
             w = 240;
@@ -21,17 +31,6 @@
             w = 320;
             h = 240;
         }
-        const info = document.getElementById("info");
-        const filter = "win16|win32|win64|mac|macintel";
-        if (0 > filter.indexOf(navigator.platform.toLowerCase())) {
-            console.log("Client platform : Mobile");
-            //const constraints = { audio: false, video: {facingMode:{exact:"environment"}} }; //Back camera for mobile
-        } else {
-            console.log("Client platform : PC");
-            const constraints = { audio: false, video: true }; //Front camera
-        }
-
-
         const video = document.getElementById("videoInput");
         video.width = w;
         video.height = h;
