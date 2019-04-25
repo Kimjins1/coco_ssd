@@ -10,12 +10,23 @@
     <font color="blue">
         <div id="info">...</div>
     </font>
-    <video id="videoInput" width="320" height="240" style="position: absolute; left:10; top:30"></video>
-    <canvas id="videoOutput" width="320" height="240" style="position: absolute; left:10; top:30"></canvas>
+    <video id="videoInput" style="position: absolute; left:10; top:30"></video>
+    <canvas id="videoOutput" style="position: absolute; left:10; top:30"></canvas>
     <script>
+        const orientation = window.orientation;
+        let w, h;
+        if (orientation == 0) {
+            w = 240;
+            h = 320;
+        } else {
+            w = 320;
+            h = 240;
+        }
         const info = document.getElementById("info");
         const constraints = { audio: false, video: true };
         const video = document.getElementById("videoInput");
+        video.style.width = w;
+        video.style.height = h;
         function successCallback(stream) {
             video.srcObject = stream;
             video.play();
@@ -34,6 +45,8 @@
         makeNet();
         let predict;
         const canvas = document.getElementById("videoOutput");
+        canvas.style.width = w;
+        canvas.style.height = h;
         const ctx = canvas.getContext("2d");
         ctx.strokeStyle = "rgb(0, 255, 0)";
         ctx.fillStyle = "rgb(0, 255, 0)";
@@ -43,7 +56,7 @@
             predict = await net.detect(video);
             info.innerHTML = "Object No. : " + predict.length;
             if (predict.length > 0) {
-                ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+                ctx.clearRect(0, 0, w, h);
                 for (let i = 0; i < predict.length; i++) {
                     ctx.fillText(predict[i].class, predict[i].bbox[0] + 5, predict[i].bbox[1] + 15);
                     ctx.strokeRect(predict[i].bbox[0], predict[i].bbox[1], predict[i].bbox[2], predict[i].bbox[3]);
